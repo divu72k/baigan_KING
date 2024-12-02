@@ -1,0 +1,113 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_CITIES 100
+
+// Structure to represent a graph
+typedef struct {
+    int vertices;
+    int adjacency[MAX_CITIES][MAX_CITIES];
+} Graph;
+
+// Function prototypes
+void initializeGraph(Graph *G, int V);
+void addEdge(Graph *G, int src, int dest);
+void BFS(Graph *G, int start);
+void DFS(Graph *G, int start, bool visited[]);
+bool isConnected(Graph *G);
+
+int main() {
+    Graph G;
+    int N, i, j, start;
+
+    printf("Enter the number of cities: ");
+    scanf("%d", &N);
+
+    initializeGraph(&G, N);
+
+    // Input adjacency matrix
+    printf("Enter the adjacency matrix:\n");
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+            scanf("%d", &G.adjacency[i][j]);
+        }
+    }
+
+    printf("Enter the starting city for BFS: ");
+    scanf("%d", &start);
+
+    printf("Nodes reachable from city %d using BFS:\n", start);
+    BFS(&G, start);
+
+    if (isConnected(&G)) {
+        printf("The graph is connected.\n");
+    } else {
+        printf("The graph is not connected.\n");
+    }
+
+    return 0;
+}
+
+// Function to initialize graph with given number of vertices
+void initializeGraph(Graph *G, int V) {
+    G->vertices = V;
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            G->adjacency[i][j] = 0; // Initialize all edges to 0
+        }
+    }
+}
+
+// Function to add an edge to the graph
+void addEdge(Graph *G, int src, int dest) {
+    G->adjacency[src][dest] = 1;
+}
+
+// Function to perform Breadth First Search traversal
+void BFS(Graph *G, int start) {
+    bool visited[MAX_CITIES] = { false };
+    int queue[MAX_CITIES];
+    int front = -1, rear = -1;
+
+    visited[start] = true;
+    queue[++rear] = start;
+
+    while (front != rear) {
+        int current = queue[++front];
+        printf("%d ", current);
+
+        for (int i = 0; i < G->vertices; i++) {
+            if (G->adjacency[current][i] == 1 && !visited[i]) {
+                visited[i] = true;
+                queue[++rear] = i;
+            }
+        }
+    }
+    printf("\n");
+}
+
+// Function to perform Depth First Search traversal
+void DFS(Graph *G, int start, bool visited[]) {
+    visited[start] = true;
+    printf("%d ", start);
+
+    for (int i = 0; i < G->vertices; i++) {
+        if (G->adjacency[start][i] == 1 && !visited[i]) {
+            DFS(G, i, visited);
+        }
+    }
+}
+
+// Function to check if a graph is connected using DFS
+bool isConnected(Graph *G) {
+    bool visited[MAX_CITIES] = { false };
+    DFS(G, 0, visited);
+
+    // Check if all vertices are visited
+    for (int i = 0; i < G->vertices; i++) {
+        if (!visited[i]) {
+            return false;
+        }
+    }
+    return true;
+}

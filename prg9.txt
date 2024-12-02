@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+typedef struct Term {
+    int coefficient;
+    int x_exponent;
+    int y_exponent;
+    int z_exponent;
+    struct Term* next;
+} Term;
+
+void insertTerm(Term** poly, int coefficient, int x_exponent, int y_exponent, int z_exponent) {
+    Term* newTerm = (Term*) malloc(sizeof(Term));
+    newTerm->coefficient = coefficient;
+    newTerm->x_exponent = x_exponent;
+    newTerm->y_exponent = y_exponent;
+    newTerm->z_exponent = z_exponent;
+    newTerm->next = *poly;
+    *poly = newTerm;
+}
+
+void displayPolynomial(Term* poly) {
+    if (poly == NULL) {
+        printf("Polynomial is empty.\n");
+        return;
+    }
+    Term* temp = poly->next;
+    printf("Polynomial: ");
+    do {
+        if (temp->coefficient != 0) {
+            if (temp->coefficient > 0)
+                printf("+ ");
+            printf("%dx^%dy^%dz^%d", temp->coefficient, temp->x_exponent, temp->y_exponent, temp->z_exponent);
+        }
+        temp = temp->next;
+        if (temp != poly->next)
+            printf(" + ");
+    } while (temp != poly->next);
+    printf("\n");
+}
+
+int evaluatePolynomial(Term* poly, int x, int y, int z) {
+    int result = 0;
+    if (poly == NULL) {
+        printf("Polynomial is empty.\n");
+        return result;
+    }
+    Term* temp = poly->next;
+    do {
+        result += temp->coefficient * pow(x, temp->x_exponent) * pow(y, temp->y_exponent) * pow(z, temp->z_exponent);
+        temp = temp->next;
+    } while (temp != poly->next);
+    return result;
+}
+
+Term* addPolynomials(Term* poly1, Term* poly2) {
+    Term* resultPoly = NULL;
+    if (poly1 == NULL && poly2 == NULL) {
+        printf("Both polynomials are empty.\n");
+        return resultPoly;
+    }
+    Term* temp1 = poly1->next;
+    Term* temp2 = poly2->next;
+    while (temp1 != poly1) {
+        insertTerm(&resultPoly, temp1->coefficient, temp1->x_exponent, temp1->y_exponent, temp1->z_exponent);
+        temp1 = temp1->next;
+    }
+    while (temp2 != poly2) {
+        insertTerm(&resultPoly, temp2->coefficient, temp2->x_exponent, temp2->y_exponent, temp2->z_exponent);
+        temp2 = temp2->next;
+    }
+    return resultPoly;
+}
+
+int main() {
+    // Represent and Evaluate a Polynomial P(x,y,z) = 6x^2y^2z - 4yz^5 + 3x^3yz + 2xy^5z - 2xyz^3
+    Term* polynomialP = NULL;
+    insertTerm(&polynomialP, 6, 2, 2, 1);
+    insertTerm(&polynomialP, -4, 0, 1, 5);
+    insertTerm(&polynomialP, 3, 3, 1, 1);
+    insertTerm(&polynomialP, 2, 1, 5, 1);
+    insertTerm(&polynomialP, -2, 1, 1, 3);
+    displayPolynomial(polynomialP);
+    printf("Evaluation of P(1, 2, 3): %d\n\n", evaluatePolynomial(polynomialP, 1, 2, 3));
+
+    // Find the sum of two polynomials POLY1(x,y,z) and POLY2(x,y,z) and store the result in POL
