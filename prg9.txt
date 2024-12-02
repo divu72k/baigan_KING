@@ -85,6 +85,3 @@ int main() {
     printf("Evaluation of P(1, 2, 3): %d\n\n", evaluatePolynomial(polynomialP, 1, 2, 3));
 
     // Find the sum of two polynomials POLY1(x,y,z) and POLY2(x,y,z) and store the result in POL
-
-
-u forget a thousand things every day pal make sure this is one of them - Author?
